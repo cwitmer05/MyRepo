@@ -1,0 +1,8 @@
+install.packages("readxl")
+install.packages("caret")
+install.packages("dplyr")
+install.packages("tidyr")
+install.packages("ggplot2")
+library(readxl)
+sales_data <- read_excel("~/Desktop/SalesData.xlsx")
+head(sales_data, 5)
