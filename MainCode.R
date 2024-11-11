@@ -57,4 +57,4 @@ sales_data$profit_margin <- sales_data$Profit / sales_data$Sales
 sales_data <- sales_data %>%
   select(Sales, Quantity, Discount, profit_margin)
 head(sales_data, 20)
-#test test
+
