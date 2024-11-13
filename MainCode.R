@@ -11,6 +11,9 @@ library(tidyr)
 sales_data <- read_excel("~/Desktop/SalesData.xlsx")
 sales_data <- as.data.frame(sales_data)
 
+#Rows and Columns Before Cleaning
+nrow(sales_data)
+ncol(sales_data)
 #Missing Value Removal
 sum(is.na(sales_data))
 sales_data <- drop_na(sales_data)
@@ -57,4 +60,6 @@ sales_data$profit_margin <- sales_data$Profit / sales_data$Sales
 sales_data <- sales_data %>%
   select(Sales, Quantity, Discount, profit_margin)
 head(sales_data, 20)
-
+#Number of Rows and Columns after cleaning
+nrow(sales_data)
+ncol(sales_data)
