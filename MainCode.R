@@ -134,7 +134,7 @@ cat("Average Discount:", round(average_discount, 2), "\n")
 cat("Median Discount:", round(median_discount, 2), "\n")
 
 # 10) Average and Median Profit Margin
-average_profit <- mean(sales_data$profit_margin, na.rm = TRUE)
-median_profit <- median(sales_data$profit_margin, na.rm = TRUE)
-cat("Average Profit:", round(average_profit, 2), "\n")
-cat("Median Profit:", round(median_profit, 2), "\n")
+average_profit_margin <- mean(sales_data$profit_margin, na.rm = TRUE)
+median_profit_margin <- median(sales_data$profit_margin, na.rm = TRUE)
+cat("Average Profit Margin:", round(average_profit_margin, 2), "\n")
+cat("Median Profit Margin:", round(median_profit_margin, 2), "\n")
