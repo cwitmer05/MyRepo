@@ -138,3 +138,11 @@ average_profit_margin <- mean(sales_data$profit_margin, na.rm = TRUE)
 median_profit_margin <- median(sales_data$profit_margin, na.rm = TRUE)
 cat("Average Profit Margin:", round(average_profit_margin, 2), "\n")
 cat("Median Profit Margin:", round(median_profit_margin, 2), "\n")
+
+#Summary of key variables
+summary(sales_data$Category)
+summary(sales_data$SubCategory)
+summary(sales_data$Sales)
+summary(sales_data$Quantity)
+summary(sales_data$Discount)
+summary(sales_data$profit_margin)
