@@ -63,3 +63,82 @@ head(sales_data, 20)
 #Number of Rows and Columns after cleaning
 nrow(sales_data)
 ncol(sales_data)
+
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+library(readxl)
+
+# Read and convert to dataframe
+sales_data <- read_excel("-/Downloads/SalesData.xlsx")
+sales_data <- as.data.frame(sales_data)
+
+# Convert OrderDate and ShipDate to Date type
+sales_data$OrderDate <- as.Date(sales_data$OrderDate, format="%m/%d/%Y")
+sales_data$ShipDate <- as.Date(sales_data$ShipDate, format="%m/%d/%Y")
+
+# Calculate number of days between OrderDate and ShipDate
+sales_data$DaysBetween <- as.numeric(sales_data$ShipDate - sales_data$OrderDate)
+
+# 1) Histogram of Days Between Order Date and Ship Date
+ggplot(sales_data, aes(x = DaysBetween)) +
+  geom_histogram(binwidth = 1, fill = "#4DAF4A", color = "black", alpha = 0.8) +
+  labs(title = "Distribution of Days Between Order Date and Ship Date", x = "Days Between Order and Ship", y = "Frequency") +
+  theme_minimal()
+
+# 2) Number per ShipMode (Bar Graph)
+ggplot(sales_data, aes(x = ShipMode)) +
+  geom_bar(fill = "#377EB8") +
+  labs(title = "Number of Orders per Ship Mode", x = "Ship Mode", y = "Count") +
+  theme_minimal()
+
+# 3) Number per Segment (Bar Graph)
+ggplot(sales_data, aes(x = Segment)) +
+  geom_bar(fill = "#FF7F00") +
+  labs(title = "Number of Orders per Segment", x = "Segment", y = "Count") +
+  theme_minimal()
+
+# 4) Number per State (Bar Graph)
+ggplot(sales_data, aes(x = State)) +
+  geom_bar(fill = "#984EA3") +
+  labs(title = "Number of Orders per State", x = "State", y = "Count") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  theme_minimal()
+
+# 5) Number per Region (Bar Graph)
+ggplot(sales_data, aes(x = Region)) +
+  geom_bar(fill = "#E41A1C") +
+  labs(title = "Number of Orders per Region", x = "Region", y = "Count") +
+  theme_minimal()
+
+# 6) Number per Category (Bar Graph)
+ggplot(sales_data, aes(x = Category)) +
+  geom_bar(fill = "#FFD700") +
+  labs(title = "Number of Orders per Category", x = "Category", y = "Count") +
+  theme_minimal()
+
+# Descriptive statistics for Sales, Quantity, Discount, and Profit
+
+# 7) Average and Median Sales
+average_sales <- mean(sales_data$Sales, na.rm = TRUE)
+median_sales <- median(sales_data$Sales, na.rm = TRUE)
+cat("Average Sales:", round(average_sales, 2), "\n")
+cat("Median Sales:", round(median_sales, 2), "\n")
+
+# 8) Average and Median Quantity
+average_quantity <- mean(as.numeric(sales_data$Quantity), na.rm = TRUE)
+median_quantity <- median(as.numeric(sales_data$Quantity), na.rm = TRUE)
+cat("Average Quantity:", round(average_quantity, 2), "\n")
+cat("Median Quantity:", round(median_quantity, 2), "\n")
+
+# 9) Average and Median Discount
+average_discount <- mean(sales_data$Discount, na.rm = TRUE)
+median_discount <- median(sales_data$Discount, na.rm = TRUE)
+cat("Average Discount:", round(average_discount, 2), "\n")
+cat("Median Discount:", round(median_discount, 2), "\n")
+
+# 10) Average and Median Profit
+average_profit <- mean(sales_data$Profit, na.rm = TRUE)
+median_profit <- median(sales_data$Profit, na.rm = TRUE)
+cat("Average Profit:", round(average_profit, 2), "\n")
+cat("Median Profit:", round(median_profit, 2), "\n")
