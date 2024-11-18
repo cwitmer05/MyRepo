@@ -75,7 +75,7 @@ sales_data <- sales_data %>%
 nrow(sales_data)
 ncol(sales_data)
 
-
+library(ggplot2)
 # 1) Histogram of Sales Volume
 ggplot(sales_data, aes(x = Sales)) +
   geom_histogram(binwidth = 10, fill = "lightgreen", color = "black") +
