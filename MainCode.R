@@ -151,3 +151,4 @@ summary(sales_data$profit_margin)
 
 model1 <- lm(profit_margin ~ Sales + Quantity + Discount, data = sales_data)
 summary(model1)
+View(sales_data)
