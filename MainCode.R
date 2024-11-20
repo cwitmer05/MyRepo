@@ -3,13 +3,23 @@ install.packages("caret")
 install.packages("dplyr")
 install.packages("tidyr")
 install.packages("ggplot2")
+install.packages("dotwhisker")
+install.packages("broom")
+install.packages("jtools")
+install.packages(shiny)
 library(dplyr)
 library(readxl)
 library(tidyr)
+library(dotwhisker)
+library(broom)
+library(jtools)
+library(shiny)
 
 #Read and convert to dataframe
 sales_data <- read_excel("~/Downloads/SalesData.xlsx")
 sales_data <- as.data.frame(sales_data)
+
+sales_data$Category <- as.factor(sales_data$Category)
 
 #Rows and Columns Before Cleaning
 nrow(sales_data)
@@ -150,5 +160,4 @@ summary(sales_data$Discount)
 summary(sales_data$profit_margin)
 
 model1 <- lm(profit_margin ~ Sales + Quantity + Discount + Category, data = sales_data)
-summary(model1)
-View(sales_data)
+summ(model1, scale = TRUE, digits = 4)
