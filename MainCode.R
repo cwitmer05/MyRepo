@@ -5,11 +5,17 @@ install.packages("tidyr")
 install.packages("ggplot2")
 install.packages("jtools")
 install.packages("leaps")
+install.packages("dotwhisker")
+install.packages("margins")
 library(leaps)
 library(dplyr)
 library(readxl)
 library(tidyr)
 library(jtools)
+library(dotwhisker)
+library(ggplot2)
+library(caret)
+library(margins)
 
 #Read and convert to dataframe
 sales_data <- read_excel("~/Downloads/SalesData.xlsx")
@@ -77,9 +83,6 @@ sales_data <- sales_data %>%
 #Number of Rows and Columns after cleaning
 nrow(sales_data)
 ncol(sales_data)
-
-#Load ggplot
-library(ggplot2)
 
 # 1) Histogram of Sales Volume
 ggplot(sales_data, aes(x = Sales)) +
@@ -167,7 +170,6 @@ best_bic_index <- which.min(bic_values)
 print(coef(best_model, best_bic_index))
 #Best Subset model is the same as the initial model, which is a good sign
 
-library(caret)
 # create training and validation sets with 80% and 20% of the data
 trainIndex <- createDataPartition(sales_data$Profit, p = 0.8, list = FALSE)
 training <- sales_data[trainIndex, ]
@@ -183,4 +185,32 @@ RMSE.test <- sqrt(mean((predict.test - testing$Profit)^2))
 # print RMSEs
 print(paste0("Training RMSE: ", RMSE.train))
 print(paste0("Testing RMSE: ", RMSE.test))
-#RMSE's are very similar, indicating the model is a good fit
+#RMSEs are very similar, indicating the model is a good fit
+
+#Residual Plot of Actual Vs Predicted Profit Values
+actual_values <- sales_data$Profit
+predicted_values <- fitted(model)
+residuals <- residuals(model)
+ggplot(data.frame(predicted = predicted_values, residuals = residuals), 
+       aes(x = predicted, y = residuals)) +
+  geom_point(color = "#948") +
+  geom_hline(yintercept = 0, color = "black", linetype = "dashed") +
+  labs(x = "Predicted Profit Values", y = "Residuals", title = "Residual Plot") +
+  theme_minimal()
+
+#DotWhisker Plot for Categorical Variables
+#Getting all coefficients including intercept
+coef_data <- tidy(model1) %>%
+  mutate(term = case_when(
+    term == "Intercept" ~ "Furniture (Intercept)"
+    term == "CategoryOffice Supplies" ~ "Office Supplies",
+    term == "CategoryTechnology" ~ "Technology",
+    TRUE ~ term))
+#Plot
+dwplot(coef_data, 
+       vline = geom_vline(xintercept = 0, colour = "grey50", linetype = 2)) +
+  labs(title = "Dot Whisker Plot of Model Coefficients",
+       subtitle = "Profit ~ Sales + Quantity + Discount + Category",
+       x = "Coefficient Estimate",
+       y = "Variables") + theme_minimal() + theme(plot.title = element_text(face = "bold"),
+                                                  legend.position = "none")
