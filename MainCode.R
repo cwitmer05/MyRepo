@@ -1,3 +1,4 @@
+#Installing Necessary Packages
 install.packages("readxl")
 install.packages("caret")
 install.packages("dplyr")
@@ -7,6 +8,7 @@ install.packages("jtools")
 install.packages("leaps")
 install.packages("dotwhisker")
 install.packages("margins")
+#Loading Packages
 library(leaps)
 library(dplyr)
 library(readxl)
@@ -21,11 +23,13 @@ library(margins)
 sales_data <- read_excel("~/Downloads/SalesData.xlsx")
 sales_data <- as.data.frame(sales_data)
 
+#Ensuring Category is a categorical variable
 sales_data$Category <- as.factor(sales_data$Category)
 
-#Rows and Columns Before Cleaning
+#Number of Rows and Columns Before Cleaning
 nrow(sales_data)
 ncol(sales_data)
+
 #Missing Value Removal
 sum(is.na(sales_data))
 sales_data <- drop_na(sales_data)
@@ -116,25 +120,25 @@ ggplot(sales_data, aes(x = Category)) +
 
 # Descriptive statistics for Sales, Quantity, Discount, and Profit Margin
 
-# 6) Average and Median Sales
+#Average and Median Sales
 average_sales <- mean(sales_data$Sales, na.rm = TRUE)
 median_sales <- median(sales_data$Sales, na.rm = TRUE)
 cat("Average Sales:", round(average_sales, 2), "\n")
 cat("Median Sales:", round(median_sales, 2), "\n")
 
-# 7) Average and Median Quantity
+#Average and Median Quantity
 average_quantity <- mean(as.numeric(sales_data$Quantity), na.rm = TRUE)
 median_quantity <- median(as.numeric(sales_data$Quantity), na.rm = TRUE)
 cat("Average Quantity:", round(average_quantity, 2), "\n")
 cat("Median Quantity:", round(median_quantity, 2), "\n")
 
-# 8) Average and Median Discount
+#Average and Median Discount
 average_discount <- mean(sales_data$Discount, na.rm = TRUE)
 median_discount <- median(sales_data$Discount, na.rm = TRUE)
 cat("Average Discount:", round(average_discount, 2), "\n")
 cat("Median Discount:", round(median_discount, 2), "\n")
 
-# 9) Average and Median Profit Margin
+#Average and Median Profit Margin
 average_profit <- mean(sales_data$Profit, na.rm = TRUE)
 median_profit <- median(sales_data$Profit, na.rm = TRUE)
 cat("Average Profit:", round(average_profit, 2), "\n")
@@ -188,29 +192,52 @@ print(paste0("Testing RMSE: ", RMSE.test))
 #RMSEs are very similar, indicating the model is a good fit
 
 #Residual Plot of Actual Vs Predicted Profit Values
-actual_values <- sales_data$Profit
-predicted_values <- fitted(model)
 residuals <- residuals(model)
-ggplot(data.frame(predicted = predicted_values, residuals = residuals), 
+ggplot(data.frame(predicted = predict.train, residuals = residuals), 
        aes(x = predicted, y = residuals)) +
   geom_point(color = "#948") +
   geom_hline(yintercept = 0, color = "black", linetype = "dashed") +
   labs(x = "Predicted Profit Values", y = "Residuals", title = "Residual Plot") +
-  theme_minimal()
+  theme_minimal()+
+  theme(panel.grid = element_blank())
+
+# Create a df for training and testing
+training_data <- data.frame(actual = training$Profit, predicted = predict.train, dataset = "Training")
+testing_data <- data.frame(actual = testing$Profit, predicted = predict.test, dataset = "Testing")
+
+# Combine the training and testing data
+combined_data <- rbind(training_data, testing_data)
+
+# Scatter Plot with Different Colors for Training and Testing Data
+ggplot(combined_data, aes(x = actual, y = predicted, color = dataset)) +
+  geom_point() +
+  labs(title = "Actual vs Predicted Profit", x = "Actual Profit", y = "Predicted Profit") +
+  geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed") +  # Perfect prediction line
+  theme_minimal() +
+  scale_color_manual(values = c("Training" = "blue", "Testing" = "green")) + 
+                       theme(panel.grid = element_blank())
 
 #DotWhisker Plot for Categorical Variables
-#Getting all coefficients including intercept
-coef_data <- tidy(model1) %>%
+
+# Fit the model with scaled variables
+model_std <- lm(Profit ~ Sales + Quantity + Discount + Category, data = sales_data_scaled)
+summary(model_std)
+#Renaming Coefficients and Including Furniture as the intercept
+coef_data <- tidy(model_std) %>%
   mutate(term = case_when(
-    term == "Intercept" ~ "Furniture (Intercept)"
+    term == "(Intercept)" ~ "Furniture (Intercept)",
     term == "CategoryOffice Supplies" ~ "Office Supplies",
     term == "CategoryTechnology" ~ "Technology",
     TRUE ~ term))
+
 #Plot
-dwplot(coef_data, 
-       vline = geom_vline(xintercept = 0, colour = "grey50", linetype = 2)) +
+dwplot(coef_data, vline = geom_vline(xintercept = 0, colour = "grey50", linetype = 2)) +
   labs(title = "Dot Whisker Plot of Model Coefficients",
-       subtitle = "Profit ~ Sales + Quantity + Discount + Category",
-       x = "Coefficient Estimate",
-       y = "Variables") + theme_minimal() + theme(plot.title = element_text(face = "bold"),
-                                                  legend.position = "none")
+  subtitle = "Profit ~ Sales + Quantity + Discount + Category",
+  x = "Coefficient Estimate",
+  y = "Variables") + theme_minimal() + theme(plot.title = element_text(face = "bold"),
+                                             legend.position = "none") + 
+  #True Coefficient Labels from Model
+  geom_text(aes(x = estimate, y = term, label = paste0(round(estimate, 3))), 
+            vjust = -1, 
+            size = 3)
