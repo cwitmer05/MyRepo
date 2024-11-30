@@ -18,7 +18,7 @@ library(dotwhisker)
 library(ggplot2)
 library(caret)
 library(margins)
-
+#------------------------------------------------------------------------------
 #Read and convert to dataframe
 sales_data <- read_excel("~/Downloads/SalesData.xlsx")
 sales_data <- as.data.frame(sales_data)
@@ -87,7 +87,7 @@ sales_data <- sales_data %>%
 #Number of Rows and Columns after cleaning
 nrow(sales_data)
 ncol(sales_data)
-
+#------------------------------------------------------------------------------
 # 1) Histogram of Sales Volume
 ggplot(sales_data, aes(x = Sales)) +
   geom_histogram(binwidth = 10, fill = "lightgreen", color = "black") +
@@ -150,7 +150,7 @@ summary(sales_data$Sales)
 summary(sales_data$Quantity)
 summary(sales_data$Discount)
 summary(sales_data$Profit)
-
+#------------------------------------------------------------------------------
 #Modeling the Data
 model1 <- lm(Profit ~ Sales + Quantity + Discount + Category, data = sales_data)
 summ(model1, scale = TRUE, digits = 4)
@@ -190,7 +190,7 @@ RMSE.test <- sqrt(mean((predict.test - testing$Profit)^2))
 print(paste0("Training RMSE: ", RMSE.train))
 print(paste0("Testing RMSE: ", RMSE.test))
 #RMSEs are very similar, indicating the model is a good fit
-
+#------------------------------------------------------------------------------
 #Residual Plot of Actual Vs Predicted Profit Values
 residuals <- residuals(model)
 ggplot(data.frame(predicted = predict.train, residuals = residuals), 
@@ -230,7 +230,7 @@ coef_data <- tidy(model_std) %>%
     term == "CategoryTechnology" ~ "Technology",
     TRUE ~ term))
 
-#Plot
+#Creating dotwhisker Plot
 dwplot(coef_data, vline = geom_vline(xintercept = 0, colour = "grey50", linetype = 2)) +
   labs(title = "Dot Whisker Plot of Model Coefficients",
   subtitle = "Profit ~ Sales + Quantity + Discount + Category",
